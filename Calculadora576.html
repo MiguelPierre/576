@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Impuesto Matriculación - Gestoría</title>
+    <style>
+        /* ------------------------------------------- */
+        /* ESTILOS BASE Y FONDO CON DEGRADADO */
+        /* ------------------------------------------- */
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            /* Degradado oscuro y futurista (Reemplaza la imagen) */
+            background: linear-gradient(135deg, #0a192f 0%, #172a45 50%, #0a192f 100%);
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* ------------------------------------------- */
+        /* CONTENEDOR PRINCIPAL (LA CAJA DE LA CALCULADORA) */
+        /* ------------------------------------------- */
+        .container {
+            background-color: rgba(10, 25, 30, 0.9);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 550px;
+            /* Aumentado ligeramente para el texto de ayuda */
+            border: 2px solid #00c6ff;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            color: #00c6ff;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 2px solid rgba(0, 198, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        /* ------------------------------------------- */
+        /* FORMULARIOS Y ETIQUETAS */
+        /* ------------------------------------------- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 400;
+            font-size: 0.9em;
+            color: #a0a0a0;
+        }
+
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            background-color: #1a3442;
+            border: 1px solid #00c6ff55;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #ffffff;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #00c6ff;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
+            outline: none;
+        }
+
+        .info-small {
+            font-size: 0.75em;
+            color: #00c6ff;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* ------------------------------------------- */
+        /* BOTONES */
+        /* ------------------------------------------- */
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #00c6ff;
+            color: #0a192f;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            text-transform: uppercase;
+        }
+
+        button.btn-ayuda {
+            background-color: transparent;
+            color: #00c6ff;
+            padding: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            border: 1px solid #00c6ff;
+            width: auto;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-transform: none;
+            font-weight: normal;
+        }
+
+        button.btn-ayuda:hover {
+            background-color: #00c6ff20;
+        }
+
+        /* ------------------------------------------- */
+        /* ÁREA DE AYUDA */
+        /* ------------------------------------------- */
+        #ayuda-texto {
+            background-color: #1a3442;
+            border: 1px solid #00c6ff55;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            line-height: 1.5;
+            display: none;
+            /* Inicialmente oculto */
+        }
+
+        #ayuda-texto a {
+            color: #00ffaa;
+            text-decoration: none;
+        }
+
+        #ayuda-texto a:hover {
+            text-decoration: underline;
+        }
+
+        /* ------------------------------------------- */
+        /* ÁREA DE RESULTADOS */
+        /* ------------------------------------------- */
+        .resultado-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #1a3442;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #00c6ff;
+            display: none;
+            box-shadow: 0 0 15px rgba(0, 198, 255, 0.3);
+        }
+
+        .resultado-valor {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00ffaa;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Calculadora 576</h2>
+        <div class="form-group">
+            <label for="fechaPrimera">Fecha de 1ª Matriculación:</label>
+            <input type="date" id="fechaPrimera" required>
+            <div class="info-small">Determina el % de IVA aplicable.</div>
+        </div>
+
+        <div class="form-group">
+            <label for="baseImponible">Base Imponible (€):</label>
+            <input type="number" id="baseImponible" placeholder="Ej: 15000" step="0.01">
+            <div class="info-small">Valor según tablas de la Junta de Andalucía.</div>
+        </div>
+
+        <div class="form-group">
+            <label for="emisionesV7">Emisiones CO2 (Casilla V7):</label>
+            <select id="emisionesV7">
+                <option value="0">0 - 120 g/km (0%)</option>
+                <option value="0.0475">121 - 159 g/km (4.75%)</option>
+                <option value="0.0975">160 - 199 g/km (9.75%)</option>
+                <option value="0.1475">200 o más g/km (14.75%)</option>
+            </select>
+        </div>
+
+        <button onclick="calcularImpuesto()">Calcular Importe</button>
+
+        <div id="resultadoBox" class="resultado-box">
+            <div>Importe del Impuesto:</div>
+            <div class="resultado-valor" id="valorFinal">0,00 €</div>
+            <div class="info-small" id="detalleIva"></div>
+        </div>
+        <button class="btn-ayuda" onclick="toggleAyuda()">
+            Mostrar/Ocultar Ayuda
+        </button>
+
+        <div id="ayuda-texto">
+            <h3>ℹ️ Guía Rápida de Uso</h3>
+            <ol>
+                <li>Rellena la **Fecha de 1ª Matriculación** para determinar el IVA (16%, 18% o 21%).</li>
+                <li>Introduce la **Base Imponible** (valor residual).</li>
+                <li>Selecciona el rango de **Emisiones CO2** (Casilla V7 de la Ficha Técnica) para aplicar el IEDMT.
+                </li>
+                <li>Pulsa **"Calcular Importe"**.</li>
+            </ol>
+
+            <h4>Cómo obtener la Base Imponible (Vehículos de Segunda Mano)</h4>
+            <p>La Base Imponible se obtiene del valor residual publicado por la Junta de Andalucía. Sigue estos pasos:
+            </p>
+            <ol>
+                <li>Visita el <a
+                        href="https://www.juntadeandalucia.es/organismos/atrian/areas/valoracion-bienes/medios-transporte.html"
+                        target="_blank">enlace de la Junta de Andalucía (ATRIAN)</a>.</li>
+                <li>**Elige el vehículo:** Automóvil, Motocicleta o Embarcación.</li>
+                <li>Introduce la **Fecha de 1ª Matriculación** del vehículo.</li>
+                <li>Introduce la **Fecha** en la que se quiere generar la liquidación (Modelo 576).</li>
+                <li>Indica si es **Turismo** o **Comercial**.</li>
+                <li>Introduce la **Marca** (Casilla D1 de la ficha técnica). Haz clic en **Buscar**.</li>
+                <li>Introduce el **Modelo** en el filtro de la tabla que ha aparecido (Casilla D3 de la ficha técnica) y
+                    la **Potencia Fiscal**.</li>
+                <li>**Selecciona:** El modelo de **menor valor** que se ajuste a las especificaciones exactas del
+                    vehículo.</li>
+                <li>Pulsa **CALCULAR** para obtener la Base Imponible.</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function calcularImpuesto() {
+            // 1. Obtener valores
+            const fechaPrimeraInput = document.getElementById('fechaPrimera').value;
+            const baseImponible = parseFloat(document.getElementById('baseImponible').value);
+            const v7 = parseFloat(document.getElementById('emisionesV7').value);
+
+            // Validaciones básicas
+            if (!fechaPrimeraInput || isNaN(baseImponible)) {
+                alert("Por favor, introduce una fecha de 1ª matriculación y una base imponible válida.");
+                return;
+            }
+
+            // 2. Lógica del IVA según BOE
+            const fechaPrimera = new Date(fechaPrimeraInput);
+            let iva = 0;
+            let textoIva = "";
+
+            // Fechas de corte oficiales BOE
+            // 1 de Julio de 2010 (Cambio del 16% al 18%)
+            const corte1 = new Date('2010-07-01');
+            // 1 de Septiembre de 2012 (Cambio del 18% al 21%)
+            const corte2 = new Date('2012-09-01');
+
+            if (fechaPrimera < corte1) {
+                iva = 0.16; // 16%
+                textoIva = "IVA aplicado: 16% (Anterior a julio 2010)";
+            } else if (fechaPrimera >= corte1 && fechaPrimera < corte2) {
+                iva = 0.18; // 18%
+                textoIva = "IVA aplicado: 18% (Entre julio 2010 y agosto 2012)";
+            } else {
+                iva = 0.21; // 21%
+                textoIva = "IVA aplicado: 21% (Posterior a septiembre 2012)";
+            }
+
+            // 3. Fórmula Matemática
+            // Resultado = ( Base / ( 1 + IVA + V7 ) ) * V7
+            const denominador = 1 + iva + v7;
+            console.log("El resultado del denominador es " + denominador);
+            console.log("El IVA utilizado es " + iva * 100 + "%");
+            console.log("El valor de v7 es " + v7 * 100 + "%");
+            const resultado = (baseImponible / denominador) * v7;
+
+            // 4. Mostrar Resultados
+            // Formatear a moneda española (Euro con coma decimal)
+            const resultadoFormateado = resultado.toLocaleString('es-ES', {
+                style: 'currency',
+                currency: 'EUR',
+                minimumFractionDigits: 2
+            });
+
+            document.getElementById('valorFinal').innerText = resultadoFormateado;
+            document.getElementById('detalleIva').innerText = textoIva;
+
+            // Hacer visible la caja de resultados
+            document.getElementById('resultadoBox').style.display = 'block';
+        }
+        function toggleAyuda() {
+            const ayudaDiv = document.getElementById('ayuda-texto');
+            // Si está oculto (none), lo muestra (block), si no, lo oculta.
+            ayudaDiv.style.display = (ayudaDiv.style.display === 'block' ? 'none' : 'block');
+        }
+    </script>
+
+</body>
+
+</html>
